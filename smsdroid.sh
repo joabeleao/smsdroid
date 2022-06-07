@@ -20,8 +20,9 @@ ARGUMENTS=("${@}")
 
 function dsms_help() {
 
-    echo -e "\n    usage:\n\t${0} <option> <parameters>\n
-    send sms exalmple (sim card slot; +e164 destination number; message between quotes):
+    echo -e "\n    Help menu\n
+    send sms usage and example:
+    \t${0} <sim card slot number> <+e164 destination number> <message between quotes>
     \t${0} --send 0 +551122223333 \"my message here\"\n
     read sms example:
     \t${0} --read"
@@ -38,7 +39,13 @@ function dsms_read() {
 
     dbsms_android='/data/data/com.android.providers.telephony/databases/mmssms.db'
     dbsms_output='/tmp/dbsms.db'
-    query='SELECT address,strftime("%Y-%m-%d %H:%M:%S", date/1000, "unixepoch"),strftime("%Y-%m-%d %H:%M:%S", date_sent/1000, "unixepoch"),body,service_center FROM sms;'
+    query='SELECT address,
+    strftime("%Y-%m-%d %H:%M:%S", date/1000, "unixepoch"),
+    strftime("%Y-%m-%d %H:%M:%S", date_sent/1000, "unixepoch"),
+    body,
+    service_center
+    FROM
+    sms;'
 
     adb root # the pull command only works with root adb
     adb pull "${dbsms_android}" "${dbsms_output}" # export database to pc
@@ -87,7 +94,8 @@ function dsms_send() {
     # Message
     local message
     message="${3}"
-    adb shell service call isms 5 i32 \"${slot}\" s16 \"com.android.mms.service\" s16 \"null\" s16 \""${destination}"\" s16 \"null\" s16 \"\'"${message}"\'\" s16 \"null\"
+    adb shell service call isms 5 i32 \"${slot}\" s16 \"com.android.mms.service\" \
+        s16 \"null\" s16 \""${destination}"\" s16 \"null\" s16 \"\'"${message}"\'\" s16 \"null\"
 
 }
 
